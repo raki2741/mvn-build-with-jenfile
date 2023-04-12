@@ -10,23 +10,25 @@ pipeline {
         stage('Build') {
             steps {
                 // Get some code from a GitHub repository
-                git 'https://github.com/raki2741/sample-java-code.git'
-
-                // Run Maven on a Unix agent.
-                sh "mvn -Dmaven.test.failure.ignore=true clean package"
-
-                // To run Maven on a Windows agent, use
-                // bat "mvn -Dmaven.test.failure.ignore=true clean package"
+                git 'https://github.com/raki2741/java-tomcat-maven-example.git'
             }
-
-            post {
-                // If Maven was able to run the tests, even if some of the test
-                // failed, record the test results and archive the jar file.
-                success {
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    archiveArtifacts 'target/*.jar'
-                }
-            }
-        }
+		}
+	}
+			
+	stages {
+		stage ('Build') {
+			steps {
+				sh 'mvn install'
+			}
+		}
+		
+		stage ('Deploy') {
+			steps {
+				script {
+					nexusArtifactUploader artifacts: [[artifactId: 'java-tomcat-maven-example', classifier: '', file: '/home/ubuntu/workspace/maven-project/target/java-tomcat-maven-example.war', type: 'war']], credentialsId: 'dfd40e02-e39a-45fa-89f1-bd696fc92846', groupId: 'com.example', nexusUrl: '13.234.226.90:8081/', nexusVersion: 'nexus2', protocol: 'http', repository: 'maven-central', version: '1.0-SNAPSHOT'
+				}
+			}
+				
+			}
 	}
 }
