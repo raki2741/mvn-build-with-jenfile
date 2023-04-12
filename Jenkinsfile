@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
+        stage('Clone') {
         	steps {
                 // Get some code from a GitHub repository
                 git 'https://github.com/raki2741/java-tomcat-maven-example.git'
